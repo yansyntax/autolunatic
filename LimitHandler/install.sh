@@ -33,7 +33,7 @@ echo -e "${CYAN_SOFT}━━━━━━━━━━━━━━━━━━━�
 # ========================================
 echo -e " ${WHITE}Downloading Core:${NC}"
 
-wget -q -O /usr/bin/monitor.py https://raw.githubusercontent.com/yansyntax/yan2/main/LimitHandler/monitor.py
+wget -q -O /usr/bin/monitor.py https://raw.githubusercontent.com/yansyntax/autolunatic/main/LimitHandler/monitor.py
 
 chmod +x /usr/bin/monitor.py
 
