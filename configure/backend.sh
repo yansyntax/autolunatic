@@ -1,3 +1,8 @@
+#!/bin/bash
+
+clear
+
+cat > /etc/nginx/conf.d/xray.conf <<'EOF'
 # ============================================================
   # Nginx internal — dipanggil oleh HAProxy
   # Port 8001 : HTTP  (dari HAProxy port 80/8080/8880/2082)
@@ -189,4 +194,62 @@
           index index.html;
       }
   }
-  
+EOF
+
+cat >/etc/haproxy/haproxy.cfg<<'EOF'
+global
+      daemon
+      tune.ssl.default-dh-param 2048
+      log /dev/log local0
+
+  defaults
+      mode tcp
+      option dontlognull
+      option tcp-smart-accept
+      option tcp-smart-connect
+      timeout connect 30s
+      timeout client 300s
+      timeout server 300s
+
+  # =================================================================
+  # HTTP FRONTEND — Port 80, 8080, 8880, 2082
+  # VMess-WS, VLess-WS, Trojan-WS, SSH-WS
+  # Forward semua ke Nginx:8001 — routing by path di Nginx
+  # =================================================================
+  frontend http_ws
+      bind *:80
+      bind *:8080
+      bind *:8880
+      bind *:2082
+      mode tcp
+      default_backend nginx_http
+
+  # =================================================================
+  # TLS FRONTEND — Port 443, 8443, 2083
+  # VMess-TLS, VLess-TLS, Trojan-TLS, gRPC, XHTTP, SSH-WS-TLS
+  # Forward raw TCP ke Nginx:8002 — Nginx handle SSL
+  # TIDAK pakai inspect-delay — langsung forward agar SSH TLS tidak kena timeout drop
+  # =================================================================
+  frontend https_tls
+      bind *:443
+      bind *:8443
+      bind *:2083
+      mode tcp
+      default_backend nginx_https
+
+  # =================================================================
+  # BACKENDS
+  # =================================================================
+  backend nginx_http
+      mode tcp
+      server nginx_http 127.0.0.1:8001
+
+  backend nginx_https
+      mode tcp
+      server nginx_https 127.0.0.1:8002
+EOF
+
+systemctl daemon-reload
+systemctl restart xray
+systemctl restart nginx
+systemctl restart haproxy
