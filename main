@@ -842,12 +842,11 @@ DROPBEAR_SETUP(){
     print_install "Installing Dropbear v2019.78"
 
     (apt install dropbear -y >/dev/null 2>&1) & loading $! "Installing Dropbear"
-    (wget -q ${GIT_REPO}install-dropbear.sh && chmod +x install-dropbear.sh && ./install-dropbear.sh >/dev/null 2>&1) & loading $! "Running Dropbear installer"
+    (wget -q ${GIT_REPO}dropbear19.sh && chmod +x dropbear19.sh && ./dropbear19.sh >/dev/null 2>&1) & loading $! "Running Dropbear 2019 installer"
     (wget -q -O /etc/default/dropbear "${GIT_REPO}configure/dropbear.conf") & loading $! "Downloading Dropbear config"
 
     chmod +x /etc/default/dropbear
     chmod 600 /etc/default/dropbear
-    chmod 755 /usr/sbin/dropbear
 
     (/etc/init.d/dropbear restart >/dev/null 2>&1) & loading $! "Restarting Dropbear"
 
@@ -1368,94 +1367,6 @@ ENABLED_SERVICE() {
 }
 
 # ══════════════════════════════════════════════
-#              FIX CONFIGS
-# ══════════════════════════════════════════════
-function FIX_CONFIGS() {
-clear
-mkdir -p /etc/haproxy /etc/nginx/conf.d
-cat > /etc/haproxy/haproxy.cfg <<-EOF
-global
-    daemon
-    tune.ssl.default-dh-param 2048
-    log /dev/log local0
-
-defaults
-    mode tcp
-    option dontlognull
-    option tcp-smart-accept
-    option tcp-smart-connect
-    timeout connect 30s
-    timeout client 300s
-    timeout server 300s
-
-# =================================================================
-# HTTP FRONTEND — Port 80, 8080, 8880, 2082
-# Traffic: SSH-WS, VMess-WS, VLess-WS, Trojan-WS
-# =================================================================
-frontend http_ws
-    bind *:80
-    bind *:8080
-    bind *:8880
-    bind *:2082
-    mode tcp
-
-    tcp-request inspect-delay 3s
-    tcp-request content accept if HTTP
-
-    # Deteksi WebSocket dari header Upgrade
-    acl is_websocket req.fhdr(Upgrade) -i websocket
-
-    # WS → Nginx internal port 8001 (routing by path ke Xray inbounds)
-    use_backend nginx_http if is_websocket
-
-    # Non-WS → SSH Dropbear (port 109)
-    # CATATAN: Ini adalah koneksi SSH langsung via port HTTP (80/8080/8880/2082)
-    # SSH client yang konek ke port ini akan di-forward ke Dropbear.
-    # Jika Anda ingin HTTP biasa (browser) tidak nyasar ke SSH,
-    # tambahkan backend web terpisah dan gunakan ACL tambahan,
-    # misalnya: acl is_http req.fhdr(Host) -m found
-    default_backend ssh
-
-
-# =================================================================
-# TLS/SSL FRONTEND — Port 443, 8443, 2083
-# Traffic: SSH-TLS, VMess-TLS, VLess-TLS, Trojan-TLS, gRPC, XHTTP
-# =================================================================
-frontend https_tls
-    bind *:443
-    bind *:8443
-    bind *:2083
-    mode tcp
-
-    tcp-request inspect-delay 3s
-    tcp-request content accept if { req.ssl_hello_type 1 }
-
-    # Semua TLS → Nginx internal port 8002 (Nginx yang handle SSL + routing)
-    default_backend nginx_https
-
-
-# =================================================================
-# BACKENDS
-# =================================================================
-
-# SSH Dropbear — port internal 109
-backend ssh
-    mode tcp
-    server dropbear 127.0.0.1:109
-
-# Nginx HTTP — untuk WS dari port HTTP (80/8080/8880/2082)
-backend nginx_http
-    mode tcp
-    server nginx_http 127.0.0.1:8001
-
-# Nginx HTTPS — untuk TLS (443/8443/2083), SSL dihandle Nginx
-backend nginx_https
-    mode tcp
-    server nginx_https 127.0.0.1:8002
-EOF
-}
-
-# ══════════════════════════════════════════════
 #              UDP DEPENDENCIES
 # ══════════════════════════════════════════════
 function UDEPE() {
@@ -1553,6 +1464,14 @@ run_step "Re-applying config files"   FIX_CONFIGS
 run_step "Enabling all services"      ENABLED_SERVICE
 
 UDEPE
+
+# ══════════════════════════════════════════════
+#              FIX CONFIGS
+# ══════════════════════════════════════════════
+
+curl -fsSL https://raw.githubusercontent.com/yansyntax/autolunatic/main/configure/backend.sh | tr -d '\r' | bash >/dev/null 2>&1
+rm -f backend.sh
+
 # ══════════════════════════════════════════════
 #              CLEANUP
 # ══════════════════════════════════════════════
