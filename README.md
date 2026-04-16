@@ -5,7 +5,7 @@
 <pre><code>apt update && apt upgrade -y && update-grub && sleep 2 && reboot</pre></code>
 
 ### INSTALL SCRIPT 
-<pre><code>wget -q https://raw.githubusercontent.com/yansyntax/autolunatic/main/main && chmod +x main && ./main
+<pre><code>apt -y install wget curl && wget -q https://raw.githubusercontent.com/yansyntax/autolunatic/main/main && chmod +x main && ./main
 </code></pre>
 
 ### TESTED ON OS 
