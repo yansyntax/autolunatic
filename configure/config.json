@@ -25,7 +25,6 @@
         "wsSettings": { "path": "/vless" }
       }
     },
-
     {
       "tag": "vmess-ws",
       "listen": "127.0.0.1",
@@ -43,7 +42,6 @@
         "wsSettings": { "path": "/vmess" }
       }
     },
-
     {
       "tag": "trojan-ws",
       "listen": "127.0.0.1",
@@ -62,7 +60,6 @@
         "wsSettings": { "path": "/trojan-ws" }
       }
     },
-
     {
       "tag": "vless-grpc",
       "listen": "127.0.0.1",
@@ -83,7 +80,6 @@
         }
       }
     },
-
     {
       "tag": "vmess-grpc",
       "listen": "127.0.0.1",
@@ -103,7 +99,6 @@
         }
       }
     },
-
     {
       "tag": "trojan-grpc",
       "listen": "127.0.0.1",
@@ -124,7 +119,6 @@
         }
       }
     },
-
     {
       "tag": "vless-xhttp",
       "listen": "127.0.0.1",
@@ -146,19 +140,6 @@
         }
       }
     },
-
-    {
-      "tag": "ssh-ws",
-      "listen": "127.0.0.1",
-      "port": 10015,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1",
-        "port": 109,
-        "network": "tcp"
-      }
-    },
-
     {
       "tag": "api",
       "listen": "127.0.0.1",
@@ -168,7 +149,6 @@
         "address": "127.0.0.1"
       }
     }
-
   ],
 
   "outbounds": [
@@ -180,7 +160,6 @@
       "tag": "blocked"
     }
   ],
-
   "routing": {
     "rules": [
       {
@@ -195,14 +174,11 @@
       }
     ]
   },
-
   "stats": {},
-
   "api": {
     "services": ["StatsService"],
     "tag": "api"
   },
-
   "policy": {
     "levels": {
       "0": {
@@ -217,4 +193,4 @@
       "statsOutboundDownlink": true
     }
   }
-}
+    }
