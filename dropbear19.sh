@@ -2,7 +2,8 @@ cat > /root/install-dropbear2019.sh << 'EOF'
 #!/bin/bash
 
 echo "=== INSTALL DROPBEAR 2019.78 ==="
-
+apt purge -y dropbear
+rm -f /usr/sbin/dropbear
 # STOP DROPBEAR LAMA
 systemctl stop dropbear 2>/dev/null
 apt remove -y dropbear 2>/dev/null
@@ -67,5 +68,7 @@ echo "=== DONE ==="
 
 EOF
 
+
+ln -s /usr/local/sbin/dropbear /usr/sbin/dropbear
 chmod +x /root/install-dropbear2019.sh
 bash /root/install-dropbear2019.sh
