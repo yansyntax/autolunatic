@@ -34,9 +34,10 @@ echo -e "${CYAN_SOFT}━━━━━━━━━━━━━━━━━━━�
 echo -e " ${WHITE}Downloading Core:${NC}"
 
 wget -q -O /usr/bin/monitor.py https://raw.githubusercontent.com/yansyntax/autolunatic/main/LimitHandler/monitor.py
+wget -q -O /usr/bin/triall_clean.py https://raw.githubusercontent.com/yansyntax/autolunatic/main/LimitHandler/triall_clean.py
 
 chmod +x /usr/bin/monitor.py
-
+chmod +x /usr/bin/triall_clean.py
 # ========================================
 # LOG FILE
 # ========================================
@@ -72,6 +73,31 @@ StandardError=append:/var/log/lunatic_monitor.log
 WantedBy=multi-user.target
 EOF
 
+cat > /etc/systemd/system/triall.service <<EOF
+[Unit]
+Description=Auto Trial Cleaner
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /usr/bin/triall_clean.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat > /etc/systemd/system/triall.timer <<EOF
+[Unit]
+Description=Run Trial Cleaner every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=60
+
+[Install]
+WantedBy=timers.target
+EOF
+
 # ========================================
 # ENABLE SERVICE
 # ========================================
@@ -82,6 +108,8 @@ systemctl daemon-reload
 
 systemctl enable monitor
 systemctl restart monitor
+systemctl enable triall..timer
+systemctl start triall..timer
 
 sleep 1
 
