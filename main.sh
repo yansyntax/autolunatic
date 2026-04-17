@@ -931,9 +931,9 @@ DROPBEAR_SETUP(){
     print_install "Installing Dropbear v2019.78"
 
 #    (wget -q ${GIT_REPO}dropbear19.sh && chmod +x dropbear19.sh && ./dropbear19.sh >/dev/null 2>&1) & loading $! "Running Dropbear 2019 installer"
-    
-    (curl -fsSL -o dropbear19.sh https://raw.githubusercontent.com/yansyntax/autolunatic/main/configure/dropbear19.sh >/dev/null 2>&1) & loading $! "Running Dropbear 2019 installer"
-    bash dropbear19.sh    
+    apt purge -y dropbear
+    rm -f /usr/sbin/dropbear
+    (wget -q https://raw.githubusercontent.com/yansyntax/autolunatic/main/dropbear19.sh && chmod +x dropbear19.sh && ./dropbear19.sh >/dev/null 2>&1) & loading $! "Running Dropbear 2019 installer"  
     (wget -q -O /etc/default/dropbear "${GIT_REPO}configure/dropbear.conf") & loading $! "Downloading Dropbear config"
 
     chmod +x /etc/default/dropbear
@@ -1502,6 +1502,7 @@ function RESTART_SERVICE() {
         ws
         monitor
         triall.timer
+        triall
         zivpn
         udp-custom
         udp-mini-1
