@@ -658,74 +658,89 @@ SSL_SETUP() {
 # ══════════════════════════════════════════════
 FOLDER_SETUP() {
 
+    # =========================
+    # MAIN DIR
+    # =========================
     local main_dirs=(
-        "/etc/xray" "/var/lib/luna" "/etc/lunatic" "/etc/limit" "/etc/zivpn"
-        "/etc/vmess" "/etc/vless" "/etc/trojan" "/etc/ssh" "/usr/local/bin"
+        "/etc/xray"
+        "/var/lib/luna"
+        "/etc/lunatic"
+        "/etc/limit"
+        "/etc/zivpn"
+        "/usr/local/bin"
     )
 
-    local lunatic_services=(
-        "vmess" "vless" "trojan" "ssh" "bot" "zivpn" "triall" "monitor/notif"
-    )
-
-    local protocols=("vmess" "vless" "trojan" "ssh" "zivpn")
-
-    local databases=(
-        "/etc/lunatic/vmess/vmess.db"
-        "/etc/lunatic/vless/vless.db"
-        "/etc/lunatic/trojan/trojan.db"
-        "/etc/lunatic/ssh/ssh.db"
-        "/etc/lunatic/bot/bot.db"
-        "/etc/lunatic/triall/triall.db"
-        "/etc/lunatic/monitor/notif/key"
-        "/etc/lunatic/monitor/notif/id"
-    )
-
-    # =========================
-    # CREATE MAIN DIR
-    # =========================
     for dir in "${main_dirs[@]}"; do
         mkdir -p "$dir"
     done
 
     # =========================
-    # CREATE SERVICE STRUCTURE
+    # SERVICES
     # =========================
-    for service in "${lunatic_services[@]}"; do
-        base="/etc/lunatic/$service"
+    local services=("vmess" "vless" "trojan" "ssh" "zivpn")
 
-        mkdir -p "$base"/{usage,ip,detail}
-        mkdir -p "$base/quota"/{used,today,last,usage}
+    for s in "${services[@]}"; do
+        base="/etc/lunatic/$s"
+
+        mkdir -p "$base/ip"
+        mkdir -p "$base/detail"
+        mkdir -p "$base/quota/usage"
+        mkdir -p "$base/quota/used"
+        mkdir -p "$base/quota/today"
+        mkdir -p "$base/quota/last"
     done
+
+    # =========================
+    # TRIALL (JSON BASED)
+    # =========================
+    TRIAL="/etc/lunatic/triall"
+    mkdir -p "$TRIAL"
+
+    declare -a trial_files=(
+        "ziv-triall.json"
+        "ssh-triall.json"
+        "vme-triall.json"
+        "vle-triall.json"
+        "tro-triall.json"
+    )
+
+    for f in "${trial_files[@]}"; do
+        file="$TRIAL/$f"
+        [[ ! -f "$file" ]] && echo "[]" > "$file"
+    done
+
+    # =========================
+    # TELEGRAM CONFIG (UNIFIED)
+    # =========================
+    TELE="/etc/lunatic/telegram.json"
+
+    if [[ ! -f "$TELE" ]]; then
+        cat > "$TELE" <<EOF
+{
+  "monitor": {
+    "bot_key": "",
+    "chat_id": ""
+  },
+  "main": {
+    "bot_key": "",
+    "chat_id": ""
+  }
+}
+EOF
+    fi
 
     # =========================
     # LIMIT DIR
     # =========================
-    for protocol in "${protocols[@]}"; do
-        mkdir -p "/etc/limit/$protocol"
+    for s in "${services[@]}"; do
+        mkdir -p "/etc/limit/$s"
     done
 
     # =========================
-    # DATABASE INIT
+    # VPS CONFIG
     # =========================
-    for db in "${databases[@]}"; do
-        mkdir -p "$(dirname "$db")"
-        touch "$db"
+    [[ ! -f /var/lib/luna/ipvps.conf ]] && echo "IP=" > /var/lib/luna/ipvps.conf
 
-        # isi hanya kalau kosong
-        if [[ ! -s "$db" ]]; then
-            echo "& plugin Account" > "$db"
-        fi
-    done
-
-    # =========================
-    # GLOBAL DB
-    # =========================
-    touch /etc/lunatic/{ssh,vmess,vless,trojan}.db
-
-    # =========================
-    # VPS IP CONFIG
-    # =========================
-    echo "IP=" > /var/lib/luna/ipvps.conf
 }
 
 # ══════════════════════════════════════════════
