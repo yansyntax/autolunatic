@@ -1480,16 +1480,16 @@ function RESTART_SERVICE() {
         openvpn
         dropbear
         ssh
+        sshd
         cron
         vnstat
         netfilter-persistent
         ws
         monitor
+        triall.timer
         zivpn
         udp-custom
         udp-mini-1
-        zivpn
-        udp-custom
     )
 
     # =========================
