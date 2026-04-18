@@ -1,4 +1,3 @@
-cat > /root/install-dropbear2019.sh << 'EOF'
 #!/bin/bash
 
 echo "=== INSTALL DROPBEAR 2019.78 ==="
@@ -70,5 +69,3 @@ EOF
 
 
 ln -s /usr/local/sbin/dropbear /usr/sbin/dropbear
-chmod +x /root/install-dropbear2019.sh
-bash /root/install-dropbear2019.sh
