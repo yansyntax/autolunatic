@@ -14,7 +14,9 @@ cat > /etc/nginx/conf.d/xray.conf <<'EOF'
   # ============================================================
 
   server {
-      listen 8001;
+      listen 8001 proxy_protocol;
+      real_ip_header proxy_protocol;
+      set_real_ip_from 127.0.0.1;
       server_name _;
 
       # ================= VMess WS =================
@@ -85,7 +87,9 @@ cat > /etc/nginx/conf.d/xray.conf <<'EOF'
   }
 
   server {
-      listen 8002 ssl http2;
+      listen 8002 ssl http2 proxy_protocol;
+      real_ip_header proxy_protocol;
+      set_real_ip_from 127.0.0.1;
       server_name _;
 
       ssl_certificate     /etc/xray/xray.crt;
@@ -240,13 +244,13 @@ global
   # =================================================================
   # BACKENDS
   # =================================================================
-  backend nginx_http
-      mode tcp
-      server nginx_http 127.0.0.1:8001
+backend nginx_http
+    mode tcp
+    server nginx_http 127.0.0.1:8001 send-proxy
 
-  backend nginx_https
-      mode tcp
-      server nginx_https 127.0.0.1:8002
+backend nginx_https
+    mode tcp
+    server nginx_https 127.0.0.1:8002 send-proxy
 EOF
 
 systemctl daemon-reload
