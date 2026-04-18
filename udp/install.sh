@@ -116,13 +116,13 @@ wget -qO /usr/local/bin/zivpn $BIN_URL
 chmod +x /usr/local/bin/zivpn
 
 # CONFIG
-wget -qO /etc/zivpn/config.json https://raw.githubusercontent.com/yansyntax/error404/main/udp/config.json
+wget -qO /etc/zivpn/config.json https://raw.githubusercontent.com/yansyntax/autolunatic/main/udp/config.json
 
 # SSL
 openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
 -subj "/C=US/ST=CA/O=LUNATIC/CN=zivpn" \
--keyout /etc/zivpn/zivpn.key \
--out /etc/zivpn/zivpn.crt >/dev/null 2>&1
+-keyout /etc/xray/zivpn.key \
+-out /etc/xray/zivpn.crt >/dev/null 2>&1
 
 # ========================================
 # CREATE DEFAULT USER

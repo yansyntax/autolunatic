@@ -1,7 +1,7 @@
 {
   "listen": ":5667",
-   "cert": "/etc/zivpn/zivpn.crt",
-   "key": "/etc/zivpn/zivpn.key",
+   "cert": "/etc/xray/zivpn.crt",
+   "key": "/etc/xray/zivpn.key",
    "obfs":"zivpn",
    "auth": {
     "mode": "passwords", 
