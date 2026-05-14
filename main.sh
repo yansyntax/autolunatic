@@ -143,7 +143,9 @@ sleep 2
 (apt install telnet -y >/dev/null 2>&1) & loading $! "Installing telnet"
 (apt install speedtest-cli -y >/dev/null 2>&1) & loading $! "Installing speedtest (Ookla)"
 (apt install vnstat -y >/dev/null 2>&1) & loading $! "Installing vnstat"
-(apt install -y nodejs >/dev/null 2>&1 && npm install -g pm2 >/dev/null 2>&1) & loading $! "Installing Node.js LTS + pm2"
+(apt install nodejs -y >/dev/null 2>&1) & loading $! "Installing Node.js LTS"
+(apt install npm -y >/dev/null 2>&1) & loading $! "Installing npm"
+(npm install -g pm2  >/dev/null 2>&1) & loading $! "Installing pm2"
 (apt install dropbear -y >/dev/null 2>&1) & loading $! "Installing Dropbear"
 (apt install rclone -y >/dev/null 2>&1) & loading $! "Installing rclone"
 
