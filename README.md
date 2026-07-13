@@ -8,6 +8,8 @@
 <pre><code>apt -y install wget curl && wget -q https://raw.githubusercontent.com/yansyntax/autolunatic/main/main && chmod +x main && ./main
 </code></pre>
 
+### install script2
+<pre><code>curl -fsSL https://raw.githubusercontent.com/yansyntax/autolunatic/main/waduk.sh -o waduk.sh && chmod +x waduk.sh && ./waduk.sh</code></pre>
 ### TESTED ON OS 
 - UBUNTU 20,22,24,25
 - DEBIAN 10,11,12,13
